@@ -1,5 +1,5 @@
-#ifndef __HUGE_INT_HPP__
-#define __HUGE_INT_HPP__
+#ifndef HUGE_INT_HPP
+#define HUGE_INT_HPP
 
 #include <string>
 #include <vector>
@@ -7,12 +7,10 @@
 class HugeInt
 {
 public:
-	HugeInt();
 	explicit HugeInt(std::string value);
 	explicit HugeInt(int value);
-	HugeInt(const HugeInt& rhs);
+	HugeInt(const HugeInt& rhs) = default;
 
-	int& operator [] (int idx);
 	HugeInt operator + (const HugeInt & rhs) const;
 	HugeInt operator * (const HugeInt & rhs) const;
 
@@ -22,10 +20,13 @@ public:
 	size_t size() const;
 
 private:
+	HugeInt();
 	bool isInputValid(const std::string& value) const;
+	bool isLessByModul(const HugeInt& rhs) const;
 
 private:
 	 std::vector<int> m_digits;
+	 bool m_sign = true;
 };
 
-#endif // __HUGE_INT_HPP__
+#endif // HUGE_INT_HPP
