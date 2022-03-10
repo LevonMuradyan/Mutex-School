@@ -14,6 +14,7 @@ HugeInt::HugeInt(std::string value)
 	}
 
 	// reserve memory for the vector exactly by digits count
+	// if input is a negative number store the sign
 	m_digits.reserve(value.size());
 	for (auto it = value.rbegin(); it != value.rend(); ++it) {
 		if (*it != '-') {
@@ -26,6 +27,7 @@ HugeInt::HugeInt(std::string value)
 
 HugeInt::HugeInt(int value)
 {
+	// for the negative number store the sign
 	if (value < 0) {
 		m_sign = false;
 		value = -value;
@@ -35,12 +37,14 @@ HugeInt::HugeInt(int value)
 		m_digits.push_back(0);
 	}
 
+	// calculating and storing the digits
 	while (value) {
 		m_digits.push_back(value % 10);
 		value /= 10;
 	}
 }
 
+// return digits count
 size_t HugeInt::size() const
 {
 	return m_digits.size();
@@ -64,6 +68,13 @@ bool HugeInt::isInputValid(const std::string& value) const
 
 HugeInt HugeInt::operator +(const HugeInt &rhs) const
 {
+	// Check both numbers signs
+	// if signs are equal, use standart addition algorithm and make the sign the same
+	// if sign are not equal
+	// find the largest number by modulo
+	// subtract smaller number from larger number, use standart subtraction algorithm and make
+	// the sign as the sign of the larger number
+
 	HugeInt result;
 
 	if (m_sign == rhs.m_sign) {
@@ -141,12 +152,17 @@ HugeInt HugeInt::operator +(const HugeInt &rhs) const
 
 HugeInt HugeInt::operator *(const HugeInt &rhs) const
 {
+	// check if one of the numbers is zero, if true return zero
+	// find the largest number by modulo to do less calculations
+	// use standart multiplication algorithm multiply two numbers
+	// if signs are not equal, make the result number sign -
+
 	if ((size() == 1 && m_digits[0] == 0) ||
 		(rhs.size() == 1 && rhs.m_digits[0] == 0)) {
 		return HugeInt(0);
 	}
 
-	bool isFirstNumberLonger = size() >= rhs.size();
+	bool isFirstNumberLarger = rhs.isLessByModul(*this);
 	HugeInt result;
 
 	for (size_t j = 0; j < std::min(size(), rhs.size()); ++j) {
@@ -158,7 +174,7 @@ HugeInt HugeInt::operator *(const HugeInt &rhs) const
 		for (size_t i = 0; i < std::max(size(), rhs.size()); ++i) {
 			int multiplication = 0;
 
-			if (isFirstNumberLonger) {
+			if (isFirstNumberLarger) {
 				multiplication = m_digits[i] * rhs.m_digits[j] + carry;
 			} else {
 				multiplication = m_digits[j] * rhs.m_digits[i] + carry;
@@ -184,6 +200,8 @@ HugeInt HugeInt::operator *(const HugeInt &rhs) const
 
 bool HugeInt::isLessByModul(const HugeInt &rhs) const
 {
+	// return true if number is less than given number by modulo, false otherwise
+
 	if (size() < rhs.size()) {
 		return true;
 	} else if (size() > rhs.size()) {
