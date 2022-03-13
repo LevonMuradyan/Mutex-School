@@ -25,7 +25,7 @@ private:
 	bool isLessByModul(const HugeInt& rhs) const;
 
 private:
-	 std::vector<int> m_digits;
+	 std::vector<int8_t> m_digits;
 	 bool m_sign = true;
 };
 

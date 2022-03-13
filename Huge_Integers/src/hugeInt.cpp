@@ -18,7 +18,7 @@ HugeInt::HugeInt(std::string value)
 	m_digits.reserve(value.size());
 	for (auto it = value.rbegin(); it != value.rend(); ++it) {
 		if (*it != '-') {
-			m_digits.push_back(static_cast<int>(*it - '0'));
+			m_digits.push_back(static_cast<int8_t>(*it - '0'));
 		} else {
 			m_sign = false;
 		}
@@ -39,7 +39,7 @@ HugeInt::HugeInt(int value)
 
 	// calculating and storing the digits
 	while (value) {
-		m_digits.push_back(value % 10);
+		m_digits.push_back(static_cast<int8_t>(value % 10));
 		value /= 10;
 	}
 }
@@ -78,9 +78,9 @@ HugeInt HugeInt::operator +(const HugeInt &rhs) const
 	HugeInt result;
 
 	if (m_sign == rhs.m_sign) {
-		int carry = 0;
+		int8_t carry = 0;
 		for (size_t i = 0; i < std::max(size(), rhs.size()); ++i) {
-			int sum = 0;
+			int8_t sum = 0;
 
 			if (i < size() && i < rhs.size()) {
 				sum = m_digits[i] + rhs.m_digits[i] + carry;
@@ -114,10 +114,10 @@ HugeInt HugeInt::operator +(const HugeInt &rhs) const
 			return HugeInt(0);
 		}
 
-		int debt = 0;
+		int8_t debt = 0;
 
 		for (size_t i = 0; i < bigger->size(); ++i) {
-			int sub = 0;
+			int8_t sub = 0;
 
 			if (i < smaller->size() && i < bigger->size()) {
 				if (bigger->m_digits[i] - debt < smaller->m_digits[i]) {
@@ -169,10 +169,10 @@ HugeInt HugeInt::operator *(const HugeInt &rhs) const
 
 		HugeInt adder;
 		adder.m_digits.resize(j);
-		int carry = 0;
+		int8_t carry = 0;
 
 		for (size_t i = 0; i < std::max(size(), rhs.size()); ++i) {
-			int multiplication = 0;
+			int8_t multiplication = 0;
 
 			if (isFirstNumberLarger) {
 				multiplication = m_digits[i] * rhs.m_digits[j] + carry;
