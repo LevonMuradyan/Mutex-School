@@ -9,6 +9,8 @@ class AutomataSimulator
 {
 public:
 	AutomataSimulator(const std::string& filename);
+	void run();
+private:
 	void readFromFile(const std::string& filename);
 	void process();
 private:
