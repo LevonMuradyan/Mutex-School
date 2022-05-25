@@ -25,7 +25,6 @@ void TuringSimulator::readFromFile(const std::string & filename)
 	std::string line;
 	size_t lineNumber = 1;
 	std::vector<std::string> inputAlphabet;
-	std::vector<std::string> outputAlphabet;
 
 	while (std::getline(file, line)) {
 
@@ -36,7 +35,7 @@ void TuringSimulator::readFromFile(const std::string & filename)
 		}
 
 		std::cout << "line = " << line << std::endl;
-		char delim = lineNumber > 3 && lineNumber < 4 + m_states.size() ? '|' : ',';
+        char delim = lineNumber > 2 && lineNumber < 3 + m_states.size() ? '|' : ',';
 
 		std::istringstream ss(line);
 		std::string token;
@@ -50,11 +49,9 @@ void TuringSimulator::readFromFile(const std::string & filename)
 
 			if (lineNumber == 1) {
 				inputAlphabet.push_back(token);
-			} else if (lineNumber == 2) {
-				outputAlphabet.push_back(token);
-			} else if (lineNumber == 3) {
+            } else if (lineNumber == 2) {
 				m_states.push_back(token);
-			} else if (lineNumber > 3 && lineNumber <= 3 + m_states.size()) {
+            } else if (lineNumber > 2 && lineNumber <= 2 + m_states.size()) {
 				std::istringstream ld(token);
 				std::string ldItem;
 
@@ -65,7 +62,7 @@ void TuringSimulator::readFromFile(const std::string & filename)
 						throw std::runtime_error("Invalid file format: Lambda or Delta functions can't be empty");
 					}
 
-					std::string key = m_states[lineNumber - 4] + ',' + inputAlphabet[col];
+                    std::string key = m_states[lineNumber - 3] + ',' + inputAlphabet[col];
 					if (isLambda) {
 						if (std::find(outputAlphabet.begin(), outputAlphabet.end(), ldItem) == outputAlphabet.end()) {
 							throw std::runtime_error("Invalid file format: Lambda function value isn't from the alphabet");
