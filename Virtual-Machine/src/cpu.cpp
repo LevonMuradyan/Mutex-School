@@ -23,43 +23,85 @@ void CPU::read(char *fileName)
 
 void CPU::process()
 {
-	while (m_regs[COUNTER] + 3 < (int8_t)m_ram.size()) {
-		int8_t opcode = +m_ram[m_regs[COUNTER]];
-		int8_t arg1 = +m_ram[m_regs[COUNTER] + 1];
-		int8_t arg2 = +m_ram[m_regs[COUNTER] + 2];
-		int8_t dest = +m_ram[m_regs[COUNTER] + 3];
+	while (m_counter + 3 < m_ram.size()) {
+		std::bitset<8> opcode(m_ram[m_counter]);
+		std::bitset<8> arg1(m_ram[m_counter + 1]);
+		std::bitset<8> arg2(m_ram[m_counter + 2]);
+		std::bitset<8> dest(m_ram[m_counter + 3]);
 
-		int8_t value1 = opcode != (opcode & (~(1 << 7))) ? arg1 : m_regs[arg1];
+		int8_t opcodeValue = (int8_t)(opcode.to_ulong());
 
-		bool cond = false;
+		int8_t value1 = (int8_t)(arg1.to_ulong());
+		if (opcode[7] == 0) {
+			if (value1 >= 0 && value1 <= 5) {
+				value1 = m_regs[value1];
+			} else if (value1 == 7) {
+				value1 = m_input;
+			} else {
+				std::cout << "invalid argument" << std::endl;
+			}
+		}
 
-		switch (opcode) {
+		int8_t value2 = (int8_t)(arg2.to_ulong());
+		if (opcode[6] == 0) {
+			if (value2 >= 0 && value2 <= 5) {
+				value2 = m_regs[value2];
+			} else if (value2 == 7) {
+				value2 = m_input;
+			} else {
+				std::cout << "invalid argument" << std::endl;
+			}
+		}
+
+		int32_t a = (int8_t)(dest.to_ulong());
+		int32_t* destValue = &a;
+		if (opcode[5] == 0) {
+			if (*destValue >= 0 && *destValue <= 5) {
+				destValue = &m_regs[*destValue];
+			} else if (*destValue == 7) {
+				destValue = &m_output;
+			} else {
+				std::cout << "invalid destination" << std::endl;
+			}
+		}
+
+		switch (opcodeValue & 63) {
+		case ADD:
+			*destValue = value1 + value2;
+			break;
+		case SUB:
+			*destValue = value1 - value2;
+			break;
+		case AND:
+			*destValue = value1 & value2;
+			break;
+		case OR:
+			*destValue = value1 | value2;
+			break;
+		case NOT:
+			*destValue = ~value1;
+			break;
+		case XOR:
+			*destValue = value1 ^ value2;
+			break;
 		case EQ:
-			cond = m_regs[arg1] == m_regs[arg2];
+			m_counter = (value1 == value2 ? *destValue : m_counter + 4);
 			break;
 		case NEQ:
-			cond = m_regs[arg1] != m_regs[arg2];
+			m_counter = (value1 != value2 ? *destValue : m_counter + 4);
 			break;
 		case L:
-			cond = m_regs[arg1] < m_regs[arg2];
+			m_counter = (value1 < value2 ? *destValue : m_counter + 4);
 			break;
 		case LE:
-			cond = m_regs[arg1] <= m_regs[arg2];
+			m_counter = (value1 <= value2 ? *destValue : m_counter + 4);
 			break;
 		case G:
-			cond = m_regs[arg1] > m_regs[arg2];
+			m_counter = (value1 > value2 ? *destValue : m_counter + 4);
 			break;
 		case GE:
-			cond = m_regs[arg1] >= m_regs[arg2];
+			m_counter = (value1 >= value2 ? *destValue : m_counter + 4);
 			break;
 		}
-
-		if (opcode != (opcode & (~(1 << 5))) && cond) {
-			m_regs[COUNTER] = (uint8_t)dest;
-		} else {
-			m_regs[COUNTER] += 4;
-		}
-
 	}
-
 }
