@@ -17,7 +17,7 @@ void CPU::read(char *fileName)
 
 	for (size_t i = 0; i < m_ram.size(); ++i) {
 		std::bitset<8> b1(m_ram[i]);
-		std::cout << b1 << std::endl;
+//		std::cout << b1 << std::endl;
 	}
 }
 
@@ -68,21 +68,27 @@ void CPU::process()
 		switch (opcodeValue & 63) {
 		case ADD:
 			*destValue = value1 + value2;
+            m_counter += 4;
 			break;
 		case SUB:
 			*destValue = value1 - value2;
+            m_counter += 4;
 			break;
 		case AND:
 			*destValue = value1 & value2;
+            m_counter += 4;
 			break;
 		case OR:
 			*destValue = value1 | value2;
+            m_counter += 4;
 			break;
 		case NOT:
 			*destValue = ~value1;
+            m_counter += 4;
 			break;
 		case XOR:
 			*destValue = value1 ^ value2;
+            m_counter += 4;
 			break;
 		case EQ:
 			m_counter = (value1 == value2 ? *destValue : m_counter + 4);
@@ -104,4 +110,6 @@ void CPU::process()
 			break;
 		}
 	}
+
+    std::cout << "output = " << m_output << std::endl;
 }
