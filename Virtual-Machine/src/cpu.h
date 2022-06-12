@@ -4,38 +4,32 @@
 #include <stdint.h>
 #include <vector>
 
-#define REG0 0
-#define REG1 1
-#define REG2 2
-#define REG3 3
-#define REG4 4
-#define REG5 5
-#define COUNTER 6
-#define INPUT 7
-#define OUTPUT 8
-
-#define ADD 0
-#define SUB 1
-#define AND 2
-#define OR 3
-#define NOT 4
-#define XOR 5
-
-#define EQ 32
-#define NEQ 33
-#define L 34
-#define LE 35
-#define G 36
-#define GE 37
-
 class CPU
 {
+private:
+	enum OPCODE {
+		ADD = 0,
+		SUB = 1,
+		AND = 2,
+		OR  = 3,
+		NOT = 4,
+		XOR = 5,
+		EQ  = 32,
+		NEQ = 33,
+		L   = 34,
+		LE  = 35,
+		G   = 36,
+		GE  = 37,
+	};
 public:
     CPU();
-    void read(char* fileName);
+	void read(const char* fileName);
     void process();
+	// just to see the results
+	int32_t getOutput() { return m_output; };
 
 private:
+	// using int32_t to store big numbers
     // registers
 	std::vector<int32_t> m_regs;
 	uint32_t m_counter;
